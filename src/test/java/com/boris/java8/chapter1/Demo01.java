@@ -12,7 +12,7 @@ import java.util.function.Predicate;
 /**
  * @Author: boris
  * @Data: Created on 2019/5/6
- * @Description: 根据各种条件筛选苹果的数量
+ * @Description:
  */
 public class Demo01 {
     List<Apple> inventory = new ArrayList<>();
@@ -26,6 +26,7 @@ public class Demo01 {
 
         inventory.add(new Apple("red", 130));
     }
+
     //根据颜色筛选苹果
     @Test
     public void test01() {
@@ -38,9 +39,24 @@ public class Demo01 {
         Predicate<Apple> weightPredicate = apple -> apple.getWeight() > 150;
         result = filterApples(result, weightPredicate);
         System.out.println(JsonUtil.toString(result));
+
     }
 
-    public <T> List<T> filterApples(List<T> inventory, Predicate predicate) {
+    //根据重量排序
+    @Test
+    public void sortTest() {
+        inventory.sort((Apple a1, Apple a2)-> a2.getWeight().compareTo(a1.getWeight()));
+        System.out.println(JsonUtil.toString(inventory));
+    }
+
+    //启动线程
+    @Test
+    public void threadTest() {
+        Thread thread = new Thread(() -> System.out.println("Thread running..."));
+        thread.start();
+    }
+
+    public <T> List<T> filterApples(List<T> inventory, Predicate<T> predicate) {
         List<T> result = new ArrayList<>();
         for (T t : inventory) {
             if (predicate.test(t)) {
@@ -49,4 +65,5 @@ public class Demo01 {
         }
         return result;
     }
+
 }
