@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
+import static java.util.Comparator.comparing;
+
 /**
  * @Author: boris
  * @Data: Created on 2019/5/6
@@ -45,7 +47,10 @@ public class Demo01 {
     //根据重量排序
     @Test
     public void sortTest() {
-        inventory.sort((Apple a1, Apple a2)-> a2.getWeight().compareTo(a1.getWeight()));
+//        inventory.sort((Apple a1, Apple a2)-> a2.getWeight().compareTo(a1.getWeight()));
+
+        //reversed可以倒序排列
+        inventory.sort(comparing(Apple::getWeight).reversed());
         System.out.println(JsonUtil.toString(inventory));
     }
 
