@@ -5,9 +5,12 @@ import com.boris.java8.util.JsonUtil;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toList;
@@ -40,7 +43,8 @@ public class DishTest {
     //filter 过滤卡路里>400的菜
     //sorted 排序
     //map 根据dish做转换
-    //limit 数量限制
+    //skip 跳过指定元素
+    //limit 数量限制 (skip与limit可结合使用实现分页)
     //distinct 去重
 
     //count 终端操作 总数
@@ -52,10 +56,41 @@ public class DishTest {
                         .sorted(comparing(Dish::getCalories).reversed())
                         .map(Dish::getName)
                         .distinct()
-                        .limit(4)
+                        .skip(1)
+                        .limit(2)
 //                        .count()
                         .collect(toList());
 
         System.out.println(JsonUtil.toString(dishs));
+    }
+
+    //map可多次使用 demo中 第一次map转化为Stream<String> 第二次转化为Stream<Integer>
+    @Test
+    public void mapTest() {
+        List<Integer> nameLengthList =
+                menu.stream()
+                        .map(Dish::getName)
+                        .map(String::length)
+                        .collect(toList());
+
+        System.out.println(JsonUtil.toString(nameLengthList));
+    }
+
+    @Test
+    public void test() {
+        Function<Dish, String> function = this.getFunction();
+        List<String> list =
+                menu.stream().map(function).collect(toList());
+
+        System.out.println(JsonUtil.toString(list));
+
+        Optional<String> option =
+                menu.stream().map(function).findAny();
+
+        System.out.println(option.get());
+    }
+
+    private Function<Dish, String> getFunction() {
+        return dish -> dish.getName().substring(0,1);
     }
 }
