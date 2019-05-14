@@ -41,7 +41,7 @@ public class DishTest {
     }
 
     //filter 过滤卡路里>400的菜
-    //sorted 排序
+    //sorted 排序 (reversed逆向排序)
     //map 根据dish做转换
     //skip 跳过指定元素
     //limit 数量限制 (skip与limit可结合使用实现分页)
