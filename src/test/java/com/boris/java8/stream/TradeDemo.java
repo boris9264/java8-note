@@ -6,10 +6,7 @@ import com.boris.java8.util.JsonUtil;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toList;
@@ -113,5 +110,36 @@ public class TradeDemo {
         Optional<Transaction> min = transactions.stream()
                 .min(comparing(Transaction::getValue));
         System.out.println(JsonUtil.toString(min.get()));
+    }
+
+    //计算所有交易总和
+    @Test
+    public void test8() {
+//        Optional<Integer> sum = transactions.stream()
+//                .map(transaction -> transaction.getValue())
+//                .reduce((a, b) -> a+b);
+//        System.out.println(sum.get());
+
+        int result = transactions.stream()
+                .mapToInt(Transaction :: getValue)
+                .sum();
+        System.out.println(result);
+    }
+
+    //找出名字最长的交易员
+    @Test
+    public void test9() {
+        //如果stream为空 那么min max等结果默认值为0
+        //使用orElse可以赋默认值
+        OptionalInt result = transactions.stream()
+                .mapToInt(transaction -> transaction.getTrader().getName().length())
+                .min();
+        System.out.println(result.orElse(99));
+
+        Optional<Trader> traderResult = transactions.stream()
+                .map(transaction -> transaction.getTrader())
+                .min(comparing(trader -> trader.getName().length()));
+
+        System.out.println(JsonUtil.toString(traderResult.get()));
     }
 }
