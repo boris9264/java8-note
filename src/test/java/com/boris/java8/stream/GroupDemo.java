@@ -3,13 +3,11 @@ package com.boris.java8.stream;
 import com.boris.java8.pojo.CaloricLevel;
 import com.boris.java8.pojo.Dish;
 import com.boris.java8.util.JsonUtil;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -61,4 +59,135 @@ public class GroupDemo {
 
         System.out.println(JsonUtil.toString(groupMenu));
     }
+
+    //多级分组 根据菜品类型分组 再根据菜品卡路里分组
+    @Test
+    public void testLevelGroup2() {
+        Map<Dish.Type, Map<CaloricLevel, List<Dish>>> result = menu.stream()
+                .collect(Collectors.groupingBy(Dish :: getType, Collectors.groupingBy(
+                        dish -> {
+                            if (dish.getCalories() > 700) {
+                                return CaloricLevel.FAT;
+                            } else if (dish.getCalories() > 400) {
+                                return CaloricLevel.NORMAL;
+                            } else {
+                                return CaloricLevel.DIET;
+                            }
+                        }
+                )));
+
+        System.out.println(JsonUtil.toString(result));
+    }
+
+    //根据菜单类型分组，统计每种菜单菜品数量
+    @Test
+    public void testGroupCount() {
+        Map<Dish.Type, Long> result = menu.stream()
+                .collect(Collectors.groupingBy(Dish :: getType, Collectors.counting()));
+
+        System.out.println(JsonUtil.toString(result));
+    }
+
+    //根据菜单类型分组，查找每种菜单中热量最高的菜品
+    @Test
+    public void groupAndFindMaxCalories() {
+        Map<Dish.Type, Optional<Dish>> result = menu.stream()
+                .collect(Collectors.groupingBy(Dish :: getType,
+                        Collectors.maxBy(Comparator.comparing(Dish :: getCalories))));
+
+
+        result.get(Dish.Type.MEAT).get();
+        System.out.println(result.get(Dish.Type.MEAT).get().getCalories());
+    }
+
+    //把收集器的结果转换为另一种类型
+    @Test
+    public void groupAndFindMaxCalories1() {
+        Map<Dish.Type, Map<String,Object>> result = menu.stream()
+                .collect(Collectors.groupingBy(Dish :: getType, Collectors.collectingAndThen(
+                        Collectors.maxBy(Comparator.comparing(Dish :: getCalories)), o -> {
+                            Map<String,Object> map = new HashMap<>();
+                            map.put("name", o.get().getName());
+                            map.put("calories", o.get().getCalories());
+                            return map;
+                        }
+                )));
+
+        System.out.println(JsonUtil.toString(result));
+    }
+
+    //根据菜单类型分组，统计每组菜单总热量
+    @Test
+    public void groupAndSumCalories() {
+        Map<Dish.Type, Long> result = menu.stream()
+                .collect(Collectors.groupingBy(Dish :: getType, Collectors.summingLong(Dish :: getCalories)));
+
+        System.out.println(JsonUtil.toString(result));
+    }
+
+    //每种类型的Dish，都有哪些CaloricLevel。
+    @Test
+    public void groupAndDistinctCalorcLevel() {
+        Map<Dish.Type, Set<CaloricLevel>> result = menu.stream()
+                .collect(Collectors.groupingBy(Dish :: getType,
+                        Collectors.mapping(dish -> {
+                            if (dish.getCalories() > 700) {
+                                return CaloricLevel.FAT;
+                            } else if (dish.getCalories() > 400) {
+                                return CaloricLevel.NORMAL;
+                            } else {
+                                return CaloricLevel.DIET;
+                            }
+                        }, Collectors.toSet())));
+
+        System.out.println(JsonUtil.toString(result));
+    }
+
+
+
+    /*
+        分区是分组的特殊情况：由一个谓词（返回一个布尔值的函数）作为分类函数，它称分区函
+        数。分区函数返回一个布尔值，这意味着得到的分组Map的键类型是Boolean，于是它最多可以
+        分为两组——true是一组，false是一组。分区的好处在于保留了分区函数返回true或false的两套流元素列表。
+    */
+
+    //菜单根据是否素食分组
+    @Test
+    public void vegetarianGroup() {
+        Map<Boolean, List<Dish>> result = menu.stream().collect(Collectors.partitioningBy(Dish :: isVegetarian));
+        System.out.println(JsonUtil.toString(result));
+    }
+
+    //菜单根据是否素食分组 再根据菜单类型分组
+    @Test
+    public void vegetarianTypeGroup() {
+        Map<Boolean, Map<Dish.Type, List<Dish>>> result = menu.stream()
+                .collect(Collectors.partitioningBy(Dish :: isVegetarian,
+                        Collectors.groupingBy(Dish :: getType)));
+
+        System.out.println(JsonUtil.toString(result));
+    }
+
+    //素食和非素食中卡路里最高的食物
+    @Test
+    public void vegetarianGroupMaxCalories() {
+        Map<Boolean, Dish> result = menu.stream()
+                .collect(Collectors.partitioningBy(Dish :: isVegetarian,
+                        Collectors.collectingAndThen(Collectors.maxBy(
+                                Comparator.comparing(Dish::getCalories)), o -> o.get())));
+
+        System.out.println(JsonUtil.toString(result));
+    }
+
+    //素食和非素食分组, 卡路里大于500和小于等于500分组
+    @Test
+    public void demo01() {
+        Map<Boolean, Map<Boolean, List<Dish>>> result = menu.stream()
+                .collect(Collectors.partitioningBy(Dish::isVegetarian,
+                        Collectors.partitioningBy(dish -> dish.getCalories()>500)));
+
+        System.out.println(JsonUtil.toString(result));
+    }
+
+
 }
