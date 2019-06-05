@@ -9,6 +9,8 @@ import org.junit.Test;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * @Author: boris
@@ -189,5 +191,17 @@ public class GroupDemo {
         System.out.println(JsonUtil.toString(result));
     }
 
+    //质数和非质数分组
+    @Test
+    public void primeTest() {
+        Map<Boolean, List<Integer>> result = IntStream.rangeClosed(2, 50)
+                .boxed()
+                .collect(Collectors.partitioningBy(a -> isPrime(a)));
+        System.out.println(JsonUtil.toString(result));
+    }
+
+    private boolean isPrime(Integer number) {
+        return IntStream.range(2, number/2+1).noneMatch(a -> number%a == 0);
+    }
 
 }
