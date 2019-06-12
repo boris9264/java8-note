@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -50,7 +51,9 @@ public class Demo01 {
 //        inventory.sort((Apple a1, Apple a2)-> a2.getWeight().compareTo(a1.getWeight()));
 
         //reversed可以倒序排列
-        inventory.sort(comparing(Apple::getWeight).reversed());
+        inventory.sort(Comparator.comparing(Apple::getWeight).reversed());
+        inventory.stream().filter(a -> {
+            System.out.println(JsonUtil.toString(a));return a.getColor().equals("red");});
         System.out.println(JsonUtil.toString(inventory));
     }
 
