@@ -18,6 +18,17 @@ import static java.util.Comparator.comparing;
  * @Description:
  */
 public class Demo01 {
+/*
+    什么是声明式编程？
+    采用这种“要做什么”风格的编程通常被称为声明式编程。你制定规则，给出了希望实现的
+    目标，让系统来决定如何实现这个目标。它带来的好处非常明显，用这种方式编写的代码更加接
+    近问题陈述了。
+
+    函数式编程的核心思想
+    函数式编程具体实践了前面介绍的声明式编程（“你只需要使用不相互影响的表达式，描述
+    想要做什么，由系统来选择如何实现”）和无副作用计算。正如我们前面所讨论的，这两个思想
+    能帮助你更容易地构建和维护系统。
+    */
     List<Apple> inventory = new ArrayList<>();
     @Before
     public void initInventory() {
